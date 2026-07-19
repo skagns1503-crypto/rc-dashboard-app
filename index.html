@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>데일리케밥 체험단</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#d62828">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="데일리케밥 체험단">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    background: #f4f5f7; color: #1f2430; padding: 14px 12px 40px;
+    max-width: 560px; margin: 0 auto;
+    padding-top: calc(14px + env(safe-area-inset-top));
+  }
+  h1 { font-size: 19px; margin-bottom: 2px; }
+  .sub { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+  .sub button { margin-left: 8px; font-size: 12px; padding: 3px 10px;
+    border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tabs button { flex: 1; padding: 10px 0; font-size: 14px; font-weight: 700;
+    border: 1px solid #d1d5db; border-radius: 10px; background: #fff; color: #6b7280; }
+  .tabs button.on { background: #24488f; border-color: #24488f; color: #fff; }
+  .calhead { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 8px; }
+  .calhead b { font-size: 17px; }
+  .calhead button { width: 38px; height: 34px; font-size: 16px; border: 1px solid #d1d5db;
+    border-radius: 8px; background: #fff; color: #374151; }
+  table.cal { border-collapse: collapse; width: 100%; background: #fff;
+    border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.06); table-layout: fixed; }
+  .cal th { font-size: 11px; color: #6b7280; padding: 7px 0; background: #eef0f4; }
+  .cal th.sun { color: #c2372b; }
+  .cal td { border: 1px solid #f0f1f4; vertical-align: top; height: 64px; padding: 3px 2px; }
+  .cal td .d { font-size: 11px; color: #4b5563; padding-left: 3px; }
+  .cal td.out .d { color: #d1d5db; }
+  .cal td.sun .d { color: #c2372b; }
+  .cal td.today { background: #fff8e6; }
+  .cal td.today .d { font-weight: 800; color: #b45309; }
+  .off { font-size: 9px; color: #b9bec7; padding-left: 3px; }
+  .chip { margin-top: 2px; padding: 2px 4px; border-radius: 6px; font-size: 9px;
+    line-height: 1.25; background: #e8eefc; color: #24488f; font-weight: 700; word-break: keep-all; }
+  .chip.done { background: #ddf3e0; color: #1d6b32; }
+  .vlist { min-width: 0 !important; width: 100%; }
+  .vlist td.nick { max-width: none; }
+  td.nick.clk, .prog td.nick { cursor: pointer; }
+  td.nick.clk span.lnk, .prog td.nick span.lnk { color: #24488f; text-decoration: underline; }
+  .ov { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: none;
+    align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .ov.show { display: flex; }
+  .dcard { background: #fff; border-radius: 14px; padding: 18px 18px 16px; max-width: 340px;
+    width: 100%; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+  .dcard h3 { font-size: 18px; margin-bottom: 6px; }
+  .drow { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0;
+    border-top: 1px solid #f0f1f4; font-size: 13px; }
+  .drow span:first-child { color: #6b7280; white-space: nowrap; }
+  .drow span:last-child { font-weight: 600; text-align: right; }
+  .cls { margin-top: 14px; width: 100%; padding: 10px; border: none; border-radius: 8px;
+    background: #24488f; color: #fff; font-size: 14px; font-weight: 700; }
+  h2 { font-size: 14px; margin: 16px 0 8px; }
+  .none { font-size: 13px; color: #9ca3af; padding: 6px 2px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .tile { background: #fff; border-radius: 10px; padding: 10px 6px; text-align: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  .tile b { display: block; font-size: 22px; }
+  .tile span { font-size: 11px; color: #6b7280; }
+  .twrap { overflow-x: auto; background: #fff; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  table.prog { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 470px; }
+  .prog th { background: #eef0f4; padding: 8px 6px; font-size: 11.5px; color: #4b5563; white-space: nowrap; }
+  .prog td { padding: 7px 6px; border-top: 1px solid #f0f1f4; text-align: center; white-space: nowrap; }
+  .prog td.nick { text-align: left; font-weight: 600; max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .b-요청 { background: #e8eefc; color: #24488f; }
+  .b-회신수령 { background: #fdf1d7; color: #8a5a00; }
+  .b-컨텐츠 { background: #ddf3e0; color: #1d6b32; }
+  .b-감사 { background: #1d6b32; color: #fff; }
+  .b-거절 { background: #fbe2e0; color: #9c1f14; }
+  a.post { color: #24488f; font-weight: 600; text-decoration: underline; }
+  .foot { font-size: 11px; color: #9ca3af; margin-top: 16px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>🥙 데일리케밥 체험단</h1>
+  <div class="sub">마지막 갱신: <span id="upd">불러오는 중…</span>
+    <button onclick="loadData()">새로고침</button></div>
+
+  <div class="tabs">
+    <button id="tabCal" class="on" onclick="showTab('cal')">방문 달력</button>
+    <button id="tabProg" onclick="showTab('prog')">진행 현황</button>
+  </div>
+
+  <div id="calView">
+    <div class="calhead">
+      <button onclick="moveMonth(-1)">‹</button>
+      <b id="calTitle"></b>
+      <button onclick="moveMonth(1)">›</button>
+    </div>
+    <table class="cal">
+      <thead><tr><th class="sun">일</th><th>월</th><th>화</th><th>수</th>
+        <th>목</th><th>금</th><th>토</th></tr></thead>
+      <tbody id="calBody"></tbody>
+    </table>
+    <h2>이달 방문</h2>
+    <div id="visitList"></div>
+  </div>
+
+  <div id="progView" style="display:none">
+    <div class="tiles" id="tiles"></div>
+    <div class="twrap">
+      <table class="prog">
+        <thead><tr><th>닉네임</th><th>상태</th><th>초청</th><th>회신</th>
+          <th>방문 예정</th><th>방문</th><th>올라온 글</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="foot">데일리케밥 체험단 진행 현황 — 자동 갱신 · 화요일 정기휴무</div>
+
+  <div class="ov" id="ov"><div class="dcard" id="ovCard"></div></div>
+
+<script>
+  // 데이터 backend = 러시안케이키 체험단 GAS (읽기 전용 JSONP). 연락처·이메일 미포함.
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbwJGOqjRJkV9QgEHB0lWxUDD9B-9xlrTdII1OQaDLUjyZ32Kp8DtCJouhcZBkNn9ObMsA/exec';
+  var WD = ['일', '월', '화', '수', '목', '금', '토'];
+  var RANK = { '감사메일 완료': 5, '컨텐츠 생성완료': 4, '회신수령': 3, '요청': 2, '거절': 1 };
+  var BADGE = { '요청': 'b-요청', '회신수령': 'b-회신수령', '컨텐츠 생성완료': 'b-컨텐츠',
+                '감사메일 완료': 'b-감사', '거절': 'b-거절' };
+  var LABEL = { '요청': '초청 보냄', '회신수령': '회신 옴', '컨텐츠 생성완료': '글 완료',
+                '감사메일 완료': '마무리 완료', '거절': '거절' };
+  var rows = [], rowByNick = {}, visits = {};
+  var cur = new Date(2026, 6, 1), todayS = '';
+
+  function d(s) { if (!s || s.length < 10) return null;
+    var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmt(s) { var dt = d(s);
+    return dt ? (dt.getMonth() + 1) + '/' + dt.getDate() + ' (' + WD[dt.getDay()] + ')' : ''; }
+  function ymd(dt) { return dt.getFullYear() + '-' +
+    String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  // ── 데이터 적용(JSONP 응답) → 재구성 + 렌더
+  function applyData(DATA) {
+    rows = ((DATA && DATA.rows) || []).slice();
+    document.getElementById('upd').textContent = (DATA && DATA.updated_at) || '-';
+    rowByNick = {};
+    rows.forEach(function (r) { rowByNick[r.nick] = r; });
+    todayS = ymd(new Date());
+    visits = {};
+    rows.forEach(function (r) {
+      if (r.state === '거절') return;
+      var doneDate = r.visited_at && r.visited_at.length === 10 ? r.visited_at : '';
+      var planDate = r.visit_planned_at && r.visit_planned_at.length === 10 ? r.visit_planned_at : '';
+      if (doneDate) (visits[doneDate] = visits[doneDate] || []).push(
+        { nick: r.nick, time: r.visit_time, party: r.visit_party, done: true });
+      if (planDate && planDate !== doneDate) (visits[planDate] = visits[planDate] || []).push(
+        { nick: r.nick, time: r.visit_time, party: r.visit_party, done: false });
+    });
+    buildProg();
+    renderCal();
+  }
+
+  function moveMonth(n) { cur = new Date(cur.getFullYear(), cur.getMonth() + n, 1); renderCal(); }
+  function renderCal() {
+    document.getElementById('calTitle').textContent =
+      cur.getFullYear() + '년 ' + (cur.getMonth() + 1) + '월';
+    var first = new Date(cur.getFullYear(), cur.getMonth(), 1);
+    var start = new Date(first); start.setDate(1 - first.getDay());
+    var html = '';
+    for (var w = 0; w < 6; w++) {
+      html += '<tr>';
+      for (var i = 0; i < 7; i++) {
+        var day = new Date(start); day.setDate(start.getDate() + w * 7 + i);
+        var inMonth = day.getMonth() === cur.getMonth();
+        var ds = ymd(day);
+        var cls = [];
+        if (!inMonth) cls.push('out');
+        if (i === 0) cls.push('sun');
+        if (ds === todayS) cls.push('today');
+        html += '<td class="' + cls.join(' ') + '"><div class="d">' + day.getDate() + '</div>';
+        if (inMonth && i === 2) html += '<div class="off">휴무</div>';
+        (visits[ds] || []).forEach(function (v) {
+          var line = [esc(v.nick), esc(v.time || ''), esc(v.party || '')].filter(Boolean).join(' · ');
+          html += '<div class="chip' + (v.done ? ' done' : '') + '">' + (v.done ? '✓ ' : '') + line + '</div>';
+        });
+        html += '</td>';
+      }
+      html += '</tr>';
+    }
+    document.getElementById('calBody').innerHTML = html;
+    renderVisitList();
+  }
+  function renderVisitList() {
+    var ym = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0');
+    var items = [];
+    Object.keys(visits).sort().forEach(function (ds) {
+      if (ds.slice(0, 7) !== ym) return;
+      visits[ds].forEach(function (v) { items.push({ ds: ds, v: v }); });
+    });
+    var el = document.getElementById('visitList');
+    if (!items.length) { el.innerHTML = '<div class="none">이달에 잡힌 방문이 없습니다.</div>'; return; }
+    var body = items.map(function (it) {
+      var dt = d(it.ds);
+      var diff = Math.round((dt - d(todayS)) / 86400000);
+      var st = it.v.done ? '<span class="badge b-컨텐츠">방문 완료</span>'
+        : diff === 0 ? '<span class="badge b-회신수령">오늘!</span>'
+        : diff === 1 ? '<span class="badge b-회신수령">내일</span>'
+        : '<span class="badge b-요청">방문 예정</span>';
+      return '<tr><td class="nick clk" data-nick="' + esc(it.v.nick) + '">' +
+        '<span class="lnk">' + esc(it.v.nick) + '</span></td>' +
+        '<td>' + (esc(it.v.party) || '-') + '</td>' +
+        '<td>' + (dt.getMonth() + 1) + '월</td><td>' + dt.getDate() + '일</td>' +
+        '<td>' + WD[dt.getDay()] + '</td><td>' + (esc(it.v.time) || '') + '</td>' +
+        '<td>' + st + '</td></tr>';
+    }).join('');
+    el.innerHTML = '<div class="twrap"><table class="prog vlist"><thead><tr>' +
+      '<th>닉네임</th><th>동행인원</th><th>월</th><th>일</th><th>요일</th><th>시간</th><th>상태</th>' +
+      '</tr></thead><tbody>' + body + '</tbody></table></div>';
+  }
+
+  function showTab(t) {
+    document.getElementById('calView').style.display = t === 'cal' ? '' : 'none';
+    document.getElementById('progView').style.display = t === 'prog' ? '' : 'none';
+    document.getElementById('tabCal').className = t === 'cal' ? 'on' : '';
+    document.getElementById('tabProg').className = t === 'prog' ? 'on' : '';
+  }
+  function buildProg() {
+    var replied = rows.filter(function (r) { return (RANK[r.state] || 0) >= 3; }).length;
+    var posted = rows.filter(function (r) { return (RANK[r.state] || 0) >= 4; }).length;
+    var upcnt = Object.keys(visits).reduce(function (n, ds) {
+      return n + visits[ds].filter(function (v) { return !v.done && ds >= todayS; }).length; }, 0);
+    var tiles = [['초청 보냄', rows.length], ['회신 옴', replied], ['방문 예정', upcnt], ['글 완료', posted]];
+    document.getElementById('tiles').innerHTML = tiles.map(function (t) {
+      return '<div class="tile"><b>' + t[1] + '</b><span>' + t[0] + '</span></div>'; }).join('');
+    var sorted = rows.slice().sort(function (a, b) {
+      var rk = (RANK[b.state] || 0) - (RANK[a.state] || 0);
+      return rk !== 0 ? rk : String(a.nick).localeCompare(String(b.nick), 'ko'); });
+    document.getElementById('tbody').innerHTML = sorted.map(function (r) {
+      var st = '<span class="badge ' + (BADGE[r.state] || 'b-요청') + '">' + esc(LABEL[r.state] || r.state) + '</span>';
+      var post = r.post_url
+        ? '<a class="post" href="' + esc(r.post_url) + '" target="_blank">🔗 ' + (fmt(r.posted_at) || '글 보기') + '</a>'
+        : fmt(r.posted_at);
+      return '<tr><td class="nick clk" data-nick="' + esc(r.nick) + '"><span class="lnk">' +
+        esc(r.nick) + '</span></td><td>' + st + '</td><td>' +
+        fmt(r.invited_at) + '</td><td>' + fmt(r.replied_at) + '</td><td>' +
+        fmt(r.visit_planned_at) + '</td><td>' + fmt(r.visited_at) + '</td><td>' + post + '</td></tr>';
+    }).join('');
+  }
+
+  function showDetail(nick) {
+    var r = rowByNick[nick];
+    if (!r) return;
+    var visitPlan = [fmt(r.visit_planned_at), r.visit_time].filter(Boolean).join(' ');
+    var postCell = r.post_url
+      ? '<a class="post" href="' + esc(r.post_url) + '" target="_blank">🔗 ' + (fmt(r.posted_at) || '글 보기') + '</a>'
+      : (fmt(r.posted_at) || '-');
+    var fields = [
+      ['상태', esc(LABEL[r.state] || r.state)], ['초청일', fmt(r.invited_at) || '-'],
+      ['회신일', fmt(r.replied_at) || '-'], ['방문 예정', esc(visitPlan) || '-'],
+      ['동행 인원', esc(r.visit_party) || '-'], ['방문 완료', fmt(r.visited_at) || '-'],
+      ['올라온 글', postCell]
+    ];
+    document.getElementById('ovCard').innerHTML = '<h3>' + esc(r.nick) + '</h3>' +
+      fields.map(function (x) { return '<div class="drow"><span>' + x[0] + '</span><span>' + x[1] + '</span></div>'; }).join('') +
+      '<button class="cls" onclick="closeDetail()">닫기</button>';
+    document.getElementById('ov').classList.add('show');
+  }
+  function closeDetail() { document.getElementById('ov').classList.remove('show'); }
+  document.getElementById('ov').addEventListener('click', function (e) { if (e.target === this) closeDetail(); });
+  ['visitList', 'tbody'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function (e) {
+      var td = e.target.closest('td.nick'); if (td && td.dataset.nick) showDetail(td.dataset.nick); });
+  });
+
+  // ── 데이터 로드(JSONP — CORS 우회, 캐시 무시)
+  function loadData() {
+    var s = document.createElement('script');
+    window.__rcCb = function (data) { try { applyData(data); } catch (e) {} s.remove(); };
+    s.src = GAS_URL + '?callback=__rcCb&_=' + Date.now();
+    s.onerror = function () { document.getElementById('upd').textContent = '(연결 실패 — 새로고침)'; s.remove(); };
+    document.body.appendChild(s);
+  }
+  renderCal();          // 빈 달력 먼저 그려 레이아웃 보이기
+  loadData();
+  setInterval(loadData, 60000);   // 1분마다 자동 갱신
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) loadData(); });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+</script>
+</body>
+</html>
