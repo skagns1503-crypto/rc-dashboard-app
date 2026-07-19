@@ -81,6 +81,12 @@
   .b-거절 { background: #fbe2e0; color: #9c1f14; }
   a.post { color: #24488f; font-weight: 600; text-decoration: underline; }
   .foot { font-size: 11px; color: #9ca3af; margin-top: 16px; text-align: center; }
+  .installBtn { display: none; width: 100%; margin: 0 0 12px; padding: 13px; border: none;
+    border-radius: 12px; background: #d62828; color: #fff; font-size: 15px; font-weight: 800;
+    box-shadow: 0 2px 8px rgba(214,40,40,.3); cursor: pointer; }
+  .installGuide { display: none; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px;
+    padding: 12px 14px; font-size: 13px; color: #9a3412; margin-bottom: 12px; line-height: 1.6; }
+  .installGuide b { color: #7c2d12; }
   /* 컴퓨터(넓은 화면) 레이아웃 — 달력 왼쪽·이달 방문 오른쪽, 크게 */
   @media (min-width: 860px) {
     body { max-width: 1040px; padding: 24px 24px 56px; }
@@ -104,6 +110,9 @@
   <h1>🥙 데일리케밥 체험단</h1>
   <div class="sub">마지막 갱신: <span id="upd">불러오는 중…</span>
     <button onclick="loadData()">새로고침</button></div>
+
+  <button id="installBtn" class="installBtn" onclick="doInstall()">📲 앱으로 설치하기</button>
+  <div id="installGuide" class="installGuide"></div>
 
   <div class="tabs">
     <button id="tabCal" class="on" onclick="showTab('cal')">방문 달력</button>
@@ -313,6 +322,30 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
   }
+
+  // ── 설치 버튼 (안드로이드/컴퓨터=네이티브 설치, 아이폰=안내)
+  var deferredPrompt = null;
+  var installed = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  var ua = navigator.userAgent || '';
+  var isiOS = /iPhone|iPad|iPod/.test(ua);
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); deferredPrompt = e;
+    if (!installed) document.getElementById('installBtn').style.display = 'block';
+  });
+  window.addEventListener('appinstalled', function () {
+    document.getElementById('installBtn').style.display = 'none';
+    document.getElementById('installGuide').style.display = 'none';
+  });
+  function doInstall() {
+    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(function () { deferredPrompt = null; }); return; }
+    var g = document.getElementById('installGuide');
+    g.innerHTML = isiOS
+      ? '<b>아이폰</b>: 이 화면을 <b>사파리(Safari)</b>로 열고, 아래 가운데 <b>공유 버튼(↑ 네모)</b>을 누른 뒤 <b>"홈 화면에 추가"</b>를 선택하세요.'
+      : '<b>컴퓨터·갤럭시</b>: 주소창 오른쪽의 <b>설치 아이콘(⊕/모니터 모양)</b> 또는 우측 상단 <b>⋮ 메뉴 → "앱 설치"</b>를 누르세요.';
+    g.style.display = 'block';
+  }
+  // 설치 안 됐으면 버튼 항상 표시(아이폰은 beforeinstallprompt가 없어서 이 경로로 보임)
+  if (!installed) document.getElementById('installBtn').style.display = 'block';
 </script>
 </body>
 </html>
