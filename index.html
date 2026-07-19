@@ -81,6 +81,23 @@
   .b-거절 { background: #fbe2e0; color: #9c1f14; }
   a.post { color: #24488f; font-weight: 600; text-decoration: underline; }
   .foot { font-size: 11px; color: #9ca3af; margin-top: 16px; text-align: center; }
+  /* 컴퓨터(넓은 화면) 레이아웃 — 달력 왼쪽·이달 방문 오른쪽, 크게 */
+  @media (min-width: 860px) {
+    body { max-width: 1040px; padding: 24px 24px 56px; }
+    h1 { font-size: 25px; }
+    .sub { font-size: 13px; margin-bottom: 16px; }
+    .tabs { max-width: 420px; }
+    #calView { display: grid; grid-template-columns: 1.75fr 1fr; gap: 24px; align-items: start; }
+    .visitbox h2 { margin-top: 0; }
+    .cal td { height: 98px; }
+    .cal td .d { font-size: 13px; }
+    .cal th { font-size: 13px; padding: 9px 0; }
+    .calhead b { font-size: 22px; }
+    .chip { font-size: 12px; padding: 3px 6px; line-height: 1.35; }
+    .off { font-size: 11px; }
+    table.prog { font-size: 13.5px; }
+    .tile b { font-size: 27px; }
+  }
 </style>
 </head>
 <body>
@@ -94,18 +111,22 @@
   </div>
 
   <div id="calView">
-    <div class="calhead">
-      <button onclick="moveMonth(-1)">‹</button>
-      <b id="calTitle"></b>
-      <button onclick="moveMonth(1)">›</button>
+    <div class="calbox">
+      <div class="calhead">
+        <button onclick="moveMonth(-1)">‹</button>
+        <b id="calTitle"></b>
+        <button onclick="moveMonth(1)">›</button>
+      </div>
+      <table class="cal">
+        <thead><tr><th class="sun">일</th><th>월</th><th>화</th><th>수</th>
+          <th>목</th><th>금</th><th>토</th></tr></thead>
+        <tbody id="calBody"></tbody>
+      </table>
     </div>
-    <table class="cal">
-      <thead><tr><th class="sun">일</th><th>월</th><th>화</th><th>수</th>
-        <th>목</th><th>금</th><th>토</th></tr></thead>
-      <tbody id="calBody"></tbody>
-    </table>
-    <h2>이달 방문</h2>
-    <div id="visitList"></div>
+    <div class="visitbox">
+      <h2>이달 방문</h2>
+      <div id="visitList"></div>
+    </div>
   </div>
 
   <div id="progView" style="display:none">
