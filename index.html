@@ -288,11 +288,12 @@
     var postCell = r.post_url
       ? '<a class="post" href="' + esc(r.post_url) + '" target="_blank">🔗 ' + (fmt(r.posted_at) || '글 보기') + '</a>'
       : (fmt(r.posted_at) || '-');
+    var phoneCell = r.phone ? '<a class="post" href="tel:' + esc(r.phone) + '">' + esc(r.phone) + '</a>' : '-';
     var fields = [
-      ['상태', esc(LABEL[r.state] || r.state)], ['초청일', fmt(r.invited_at) || '-'],
-      ['회신일', fmt(r.replied_at) || '-'], ['방문 예정', esc(visitPlan) || '-'],
-      ['동행 인원', esc(r.visit_party) || '-'], ['방문 완료', fmt(r.visited_at) || '-'],
-      ['올라온 글', postCell]
+      ['상태', esc(LABEL[r.state] || r.state)], ['연락처', phoneCell],
+      ['초청일', fmt(r.invited_at) || '-'], ['회신일', fmt(r.replied_at) || '-'],
+      ['방문 예정', esc(visitPlan) || '-'], ['동행 인원', esc(r.visit_party) || '-'],
+      ['방문 완료', fmt(r.visited_at) || '-'], ['올라온 글', postCell]
     ];
     document.getElementById('ovCard').innerHTML = '<h3>' + esc(r.nick) + '</h3>' +
       fields.map(function (x) { return '<div class="drow"><span>' + x[0] + '</span><span>' + x[1] + '</span></div>'; }).join('') +
