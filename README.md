@@ -1,5 +1,12 @@
 # 데일리케밥 체험단 대시보드 (PWA)
 
+## 📍 현황 (다음 세션은 여기부터) — 2026-08-09
+- **지금까지**: PWA 완성 (2026-07-19) — 안드로이드·아이폰·PC 반응형 + 설치 안내 버튼
+- **다음 할 일**: `git pull` 로 최신화 (현재 `origin/main` 보다 1커밋 뒤) → 개발 정본 쪽 변경분 반영
+- **정본 위치**: 개발 정본 = `russian-cake\reviewers\shared_dashboard\app\` · 이 저장소는 **GitHub Pages 배포용 앱 셸**(데이터 없음)
+
+---
+
 로한 사장님용 **설치형 웹앱**. 데이터는 러시안케이키 체험단 프로그램(GAS)에서 JSONP로 실시간 로드하며 **연락처·이메일 등 개인정보는 포함하지 않는다.**
 
 - 정본 소스: private repo `russian-cake/reviewers/shared_dashboard/app/`
