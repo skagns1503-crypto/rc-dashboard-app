@@ -45,6 +45,9 @@
   .chip { margin-top: 2px; padding: 2px 4px; border-radius: 6px; font-size: 9px;
     line-height: 1.25; background: #e8eefc; color: #24488f; font-weight: 700; word-break: keep-all; }
   .chip.done { background: #ddf3e0; color: #1d6b32; }
+  .chip.special { background: #fde68a; color: #7c2d12; border: 1px solid #f59e0b; }   /* ★ 특이사항(워킹 타코 등) */
+  tr.special td { background: #fff4d6; }
+  tr.special td:nth-child(2) { color: #b45309; font-weight: 700; }
   .vlist { min-width: 0 !important; width: 100%; }
   .vlist td.nick { max-width: none; }
   td.nick.clk, .prog td.nick { cursor: pointer; }
@@ -215,7 +218,8 @@
         if (inMonth && i === 2) html += '<div class="off">휴무</div>';
         (visits[ds] || []).forEach(function (v) {
           var line = [esc(v.nick), esc(v.time || ''), esc(v.party || '')].filter(Boolean).join(' · ');
-          html += '<div class="chip' + (v.done ? ' done' : '') + '">' + (v.done ? '✓ ' : '') + line + '</div>';
+          var sp = (v.party || '').indexOf('★') >= 0 ? ' special' : '';
+          html += '<div class="chip' + (v.done ? ' done' : '') + sp + '">' + (v.done ? '✓ ' : '') + line + '</div>';
         });
         html += '</td>';
       }
@@ -240,7 +244,8 @@
         : diff === 0 ? '<span class="badge b-회신수령">오늘!</span>'
         : diff === 1 ? '<span class="badge b-회신수령">내일</span>'
         : '<span class="badge b-요청">방문 예정</span>';
-      return '<tr><td class="nick clk" data-nick="' + esc(it.v.nick) + '">' +
+      var spc = (it.v.party || '').indexOf('★') >= 0 ? ' class="special"' : '';
+      return '<tr' + spc + '><td class="nick clk" data-nick="' + esc(it.v.nick) + '">' +
         '<span class="lnk">' + esc(it.v.nick) + '</span></td>' +
         '<td>' + (esc(it.v.party) || '-') + '</td>' +
         '<td>' + (dt.getMonth() + 1) + '월</td><td>' + dt.getDate() + '일</td>' +

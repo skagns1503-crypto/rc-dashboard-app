@@ -1,5 +1,5 @@
 /* 데일리케밥 체험단 PWA — 셸 캐시(설치·오프라인 표시용). 데이터는 항상 네트워크(JSONP). */
-var CACHE = 'rc-dashboard-v1';
+var CACHE = 'rc-dashboard-v2';
 var SHELL = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
