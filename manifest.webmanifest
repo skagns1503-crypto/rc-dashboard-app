@@ -1,7 +1,7 @@
 {
-  "name": "GNU Kebab 체험단",
-  "short_name": "체험단",
-  "description": "GNU Kebab 체험단 초청·방문 현황판",
+  "name": "GNU Kebab_Experience",
+  "short_name": "GNU Kebab_Experience",
+  "description": "GNU Kebab_Experience — 체험단 초청·방문 현황판",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
