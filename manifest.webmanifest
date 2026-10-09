@@ -1,7 +1,7 @@
 {
-  "name": "데일리케밥 체험단",
+  "name": "GNU Kebab 체험단",
   "short_name": "체험단",
-  "description": "데일리케밥 체험단 초청·방문 현황판",
+  "description": "GNU Kebab 체험단 초청·방문 현황판",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
